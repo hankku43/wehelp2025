@@ -128,24 +128,36 @@
           <div class="brand">古亦弘 • WeHelp 深度學習課程申請</div>
         </div>
         <div class="right">
-          <n-switch v-model:value="isDark" size="large" aria-label="切換深色/淺色模式">
-            <template #checked-icon>
-              <span class="switch-icon">🌙</span>
-            </template>
-            <template #unchecked-icon>
-              <span class="switch-icon">☀️</span>
-            </template>
-          </n-switch>
+          <label>
+            <span class="switch-label">{{ isDark ? '深色模式' : '淺色模式' }}</span>
+            <n-switch v-model:value="isDark" size="large" aria-label="切換深色/淺色模式">
+              <template #checked-icon>
+                <span class="switch-icon">🌙</span>
+              </template>
+              <template #unchecked-icon>
+                <span class="switch-icon">☀️</span>
+              </template>
+            </n-switch>
+
+          </label>
         </div>
       </header>
 
       <!-- Hero -->
       <section class="hero">
         <div class="hero-inner">
-          <h1 class="hero-title">歡迎 WeHelp Academy 團隊</h1>
-          <p class="hero-sub">申請 WeHelp Academy｜前端工程師訓練生</p>
-          <n-button type="primary" size="large" class="hero-btn" @click="scrollTo('intro')">開始閱讀</n-button>
-          <div class="scroll-indicator" @click="scrollTo('intro')">⬇️</div>
+          <h1 class="hero-title">歡迎 WeHelp Academy 蒞臨</h1>
+          <p class="hero-sub">申請 WeHelp 深度學習課程｜自我介紹｜報名表</p>
+
+          <div class="hero-scroll-btn" @click="scrollTo('intro')">
+            <span>開始閱讀</span>
+            <svg class="arrow-down" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+
         </div>
         <div class="hero-visual" aria-hidden="true">
           <div class="vortex"></div>
@@ -162,8 +174,8 @@
               </div>
               <div>
                 <h2 class="name">古亦弘</h2>
-                <p class="short">我目前是一名前端工程師/應屆畢業生，熱衷於寫乾淨、有可讀性的前端程式碼，擅長 Vue 3 與現代化 UI 實作。</p>
-                <p class="motivation">我想參加 WeHelp Academy，期望在 6 個月密集實作中提升大型專案協作能力，以及加強深度學習模型在前端或後端的整合技能。</p>
+                <p class="short">我是從生技領域轉職至金融業軟體工程，擁有JAVA MVC網頁服務全端工程師1年工作經驗。</p>
+                <p class="motivation">我想參加 WeHelp 深度學習訓練。期望在 6 個月密集實作中提升大型專案協作能力，以及加強深度學習模型在前端或後端的整合技能。</p>
               </div>
             </div>
           </n-card>
@@ -171,7 +183,7 @@
 
         <!-- Q&A Cards -->
         <section class="qa-list">
-          <n-grid :cols="3" :x-gap="24" :y-gap="24" responsive>
+          <n-grid :cols="1" :x-gap="24" :y-gap="24" responsive>
             <n-grid-item v-for="(q, idx) in qas" :key="idx">
               <n-card class="glass qa-card" hoverable>
                 <n-collapse>
@@ -205,7 +217,7 @@
 import { ref } from 'vue'
 import { darkTheme } from 'naive-ui'
 
-const isDark = ref(true)
+const isDark = ref(false)
 const intro = ref(null)
 
 const scrollTo = (id) => {
@@ -295,6 +307,9 @@ html,
   z-index: 60;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(6px);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 8px 16px rgba(0, 0, 0, 0.06);
   color: var(--text-light);
   transition: all 0.3s;
 }
@@ -302,6 +317,9 @@ html,
 .mode-dark .site-header {
   background: rgba(0, 0, 0, 0.18);
   color: var(--text-dark);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .site-header .brand {
@@ -316,6 +334,12 @@ html,
 
 .n-switch__button:hover .switch-icon {
   transform: rotate(20deg);
+}
+
+.site-header .switch-label {
+  font-weight: 300;
+  font-size: 12px;
+  margin-right: 10px;
 }
 
 /* Hero */
@@ -351,21 +375,49 @@ html,
   animation: fadeInUp 1.2s ease forwards;
 }
 
-.hero-btn {
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-}
-
-.hero-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-}
-
-.scroll-indicator {
-  margin-top: 24px;
+.hero-scroll-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #d3e2f5, #e0eaf9);
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 2rem;
   cursor: pointer;
-  animation: bounce 2s infinite alternate;
-  font-size: 28px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  /* 調整為更淺的陰影 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.hero-scroll-btn:hover {
+  transform: translateY(-3px);
+  /* 調整 hover 時的陰影，讓效果更輕微 */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.arrow-down {
+  margin-top: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: bounce 1.5s infinite;
+}
+
+/* 深色模式的樣式覆寫 */
+.mode-dark .hero-scroll-btn {
+  background: linear-gradient(135deg, #3796c5b4, #2a6b8694);
+  color: #e0eaf9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.mode-dark .hero-scroll-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.25), 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.mode-dark .arrow-down {
+  color: #e0eaf9;
 }
 
 /* Vortex */
@@ -382,12 +434,18 @@ html,
   height: 1600px;
   right: -400px;
   top: -400px;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12), transparent 35%),
-    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.06), transparent 35%),
-    radial-gradient(circle at 50% 50%, rgba(255, 200, 255, 0.08), transparent 50%);
+  background: radial-gradient(circle at 30% 30%, rgba(120, 160, 255, 0.30), transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(200, 160, 255, 0.3), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 180, 220, 0.3), transparent 55%);
   transform: rotate(0deg);
   filter: blur(80px);
   animation: rotateVortex 40s linear infinite;
+}
+
+.mode-dark .vortex {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 35%),
+    radial-gradient(circle at 70% 70%, rgba(180, 200, 255, 0.12), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255, 200, 255, 0.20), transparent 50%);
 }
 
 /* Main Content */
@@ -423,7 +481,7 @@ html,
 }
 
 .glass.qa-card:hover .n-card__body {
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.541) !important;
   transform: translateY(-3px);
   transition: all 0.35s ease;
 }
@@ -547,11 +605,11 @@ html,
   }
 
   40% {
-    transform: translateY(-10px);
+    transform: translateY(5px);
   }
 
   60% {
-    transform: translateY(-5px);
+    transform: translateY(3px);
   }
 }
 
