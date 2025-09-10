@@ -174,14 +174,20 @@
               </div>
               <div>
                 <h2 class="name">古亦弘</h2>
-                <p class="short">我是從生技領域轉職至金融業軟體工程，擁有JAVA MVC網頁服務全端工程師1年工作經驗。</p>
-                <p class="motivation">我想參加 WeHelp 深度學習訓練。期望在 6 個月密集實作中提升大型專案協作能力，以及加強深度學習模型在前端或後端的整合技能。</p>
+                <p class="short">原本在生技領域進修與研究，後來轉職進入金融業擔任軟體工程師，累積了一年使用 Java MVC 進行全端開發 的工作經驗。</p>
+                <p class="motivation">
+                  因為生活規劃與地點遷移的考量，我離開了前一份工作，來到竹南展開新生活，也開始尋找能持續精進的學習資源。從研究所畢業後，我對機器學習開始產生興趣。
+                  在服兵役期間，我唯一帶進去的書就是 Luis Serrano 的《白話機器學習》中文譯本。此外，當時正好台大李宏毅教授在 YouTube 發佈了他的【生成式 AI 導論】課程影片，
+                  這些資源讓我更加確信，深度學習是我未來職涯最想投入的方向。線上的課程雖然很多，但要不是價格過高，就是內容零散。
+                  因此當我看到 WeHelp 推出的深度學習課程時，覺得格外振奮，這正是我期待已久的機會。
+                </p>
               </div>
             </div>
           </n-card>
         </section>
 
         <!-- Q&A Cards -->
+
         <section class="qa-list">
           <n-grid :cols="1" :x-gap="24" :y-gap="24" responsive>
             <n-grid-item v-for="(q, idx) in qas" :key="idx">
@@ -189,7 +195,10 @@
                 <n-collapse>
                   <n-collapse-item :title="q.question">
                     <div class="qa-answer">
+                      <!-- 文字答案 -->
                       <p v-html="q.answer"></p>
+                      <!-- 如果有圖表，顯示圖表 -->
+                      <v-chart v-if="q.chartOption" class="chart" :option="q.chartOption" autoresize />
                     </div>
                   </n-collapse-item>
                 </n-collapse>
@@ -197,6 +206,8 @@
             </n-grid-item>
           </n-grid>
         </section>
+
+
 
         <!-- Footer -->
         <footer class="site-footer">
@@ -216,6 +227,15 @@
 <script setup>
 import { ref } from 'vue'
 import { darkTheme } from 'naive-ui'
+import { NCard, NGrid, NGridItem, NCollapse, NCollapseItem } from "naive-ui"
+import VChart from "vue-echarts"
+import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
+import { PieChart } from "echarts/charts"
+import { TitleComponent, TooltipComponent, LegendComponent } from "echarts/components"
+
+// 註冊 ECharts 組件
+use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent, LegendComponent])
 
 const isDark = ref(false)
 const intro = ref(null)
@@ -226,35 +246,81 @@ const scrollTo = (id) => {
   }
 }
 
+const option = {
+  title: {
+    text: "學習時間分配",
+    left: "center"
+  },
+  tooltip: {
+    trigger: "item"
+  },
+  legend: {
+    bottom: 0
+  },
+  series: [
+    {
+      name: "每日學習時數",
+      type: "pie",
+      radius: "50%",
+      data: [
+        { value: 8, name: "平日 (第一二階段)" },
+        { value: 4, name: "假日 (複習/練習)" },
+        { value: 9, name: "平日 (第三階段)" },
+        { value: 5, name: "假日 (專案/討論)" }
+      ]
+    }
+  ]
+}
+
 // Q&A data
 const qas = [
   {
     question: '目前的職業背景，若是剛畢業，畢業的科系為何？',
-    answer: `我目前是一名前端全端工程師，畢業於國立臺灣大學森林系（學士與碩士皆為森林科學背景）。雖然本科與碩士專業為生技與植物研究，但我自學前端程式，完成多個專案與互動式小遊戲，成功轉職為 JAVA 全端工程師，具備跨領域問題解決能力與實務經驗。`
+    answer: `我目前待業中，前一份工作是在國泰人壽擔任JAVA全端工程師，負責維護和開發B2E系統的網頁服務，主要使用的技術包含JAVA、JSP、JDBC、JAVA servlet、SQL、Spring-boot、Vue。畢業於國立臺灣大學森林系（學士與碩士皆為森林科學背景）。雖然本科與碩士專業為生技與植物研究，但我自學前端程式產出作品，獲選國泰人壽JAVA培訓生，並順利通過考核成功轉職為 JAVA 全端工程師。`
   },
   {
     question: '如果參與這個訓練，會怎麼安排學習時間？',
-    answer: `我會採取系統化與有回饋的學習方式：<br>1) 平日：每日投入約 4 小時專注學習。<br>2) 假日：每日投入約 6 小時練習與專案實作。<br>3) 每週末：與同儕進行一次 code review，檢視程式品質並討論改進方案，以持續提升技術能力與合作效率。`
+    answer: `第一階段與第二階段<br>維持每週44小時以上的學習時間<br>1) 平日：每日投入 8 小時以上。依課程內容規劃學習與實作，並在每日21:00前完成進度報告撰寫<br>2) 假日：依課程內容投入 4 ~ 8 小時z複習、練習、實作並參與群組的問題討論。 <br> 第三階段<br>維持每週50小時以上的學習時間。依當週進度調整於平日約9小時專注練習或專案開發，同樣在每日21:00前完成進度報告撰寫，假日視情況安排5小時以上的時間開發專案與關注群組討論。原則上會安排星期日做休息放鬆，調適心情維持高度的學習效率。`,
+    chartOption: {
+      title: { text: "學習時間分配", left: "center" },
+      tooltip: { trigger: "item" },
+      legend: { bottom: 0 },
+      series: [
+        {
+          name: "每日學習時數",
+          type: "pie",
+          radius: "50%",
+          data: [
+            { value: 8, name: "平日 (第一二階段)" },
+            { value: 4, name: "假日 (複習/練習)" },
+            { value: 9, name: "平日 (第三階段)" },
+            { value: 5, name: "假日 (專案/討論)" }
+          ]
+        }
+      ]
+    }
   },
   {
     question: '請描述一件產生明顯負面情緒的經歷，如何處理該情緒？',
-    answer: `在專案中曾因溝通不良而導致功能延遲，當時感到焦慮。我先冷靜分析問題、整理需求與流程，並主動提出每日短會追蹤進度。最終，我學會拆解任務、建立清晰 API 與工作優先順序，不僅解決了專案瓶頸，也提升團隊協作效率。`
+    answer: ``
   },
   {
     question: '最想使用自己開發的深度學習模型解決什麼問題？',
-    answer: `我希望開發一個自動化資料標註模型，降低人工標註成本並提升資料品質，藉此支援機器學習與 AI 應用，讓跨領域資料整合與分析更高效。`
+    answer: `如果是要設立一個初階小的目標，我想讓我的模型幫我作詞作曲。<br/>要是3年前能有這個機會學習深度學習，我應該會希望模型能協助我進行研究(關於蛋白質序列核抗體親和力的預測)<br/>但我現在已不在學術界，當然如果未來有機會我也相當希望我可以將深度學習應用在生物技術上甚至是醫療產業當中，但以初階的目標來說我希望能讓模型幫助我作詞作曲，彈吉他是我的興趣之一，偶爾我也會將想法和心情抒發成歌曲，但我時常遇到歌詞寫不出來的情況，
+    然而現在的語言模型對於音韻的理解不太好，提供的意見通常唱起來都很不通順；第二個遇到的難題是，我的樂理知識有限，經常配不出理想的和弦，總是希望如果有AI可以針對特定的旋律提供和弦配合的意見。`
   },
   {
     question: '若終究無法達到 OpenAI 的程度，為何要學習基礎模型的實作？',
-    answer: `基礎模型的實作能讓我深入理解資料處理、訓練流程與模型評估。即便無法達到前沿水準，掌握底層能力仍可應用於實務產品，並為後續進階開發奠定穩固基礎。`
+    answer: `基礎模型的實作能讓我深入理解資料處理、訓練流程與模型評估。而且我認為，要評估一個模型的好壞，應該是要看他預計要解決什麼問題，就算我自己訓練的模型無法像chatGPT那麼像個活人，針對不同的產業、不同的任務會有不同的需求，也許對某些需求來說，
+    看起來笨一點的模型才是好模型，不管如何，學習基礎模型的實作都是成為AI工程師，也是我目標職涯的基礎。`
   },
   {
     question: '從上次提出申請至今，多做了哪些努力？',
-    answer: `我完成了以下進修與專案：<br>• 開發 3 個前端專案，涵蓋 UI/UX 設計與互動效果。<br>• 熟練 Vue 3 Composition API 與前端測試流程。<br>• 練習 PyTorch 模型訓練，掌握資料前處理與模型驗證。<br>• 持續探索 AI 工具，提升跨領域整合能力與問題解決能力。`
+    answer: `我曾經申請過「網站開發」課程，但礙於課程的前幾週我仍在服兵役，沒能有充足的時間配合上課。我於去年五月初退伍，花了2個月的時間從彭彭老師的youtube影片中自學HTML/CSS和JavaScript，並獨立完成了一個由原生javaScript的打地鼠遊戲，成果受到國泰人壽IT單位肯定，獲選為JAVA培訓學員，供薪學習JAVA語言，後續成功通過審核，成為正式員工，負責B2E JAVA 網頁服務開發與維護。培訓期間是供薪的高強度學習，除了上班時間的上課之外，也需花費下班時間和假日練習與開發專案，這都是我為了轉職成軟體工程師所作的努力。`
   },
   {
     question: '其他想要對我們說的事情？',
-    answer: `感謝 WeHelp 提供這次機會。我希望能加入重視實作與回饋的環境，與優秀同儕共同成長，持續拓展技術視野，並將跨領域的學習與實務能力應用於實際專案中。`
+    answer: ``
   },
 ]
 </script>
@@ -540,6 +606,11 @@ html,
   font-size: 16px;
   color: var(--subtext-light);
   transition: color 0.3s;
+}
+
+.chart {
+  width: 100%;
+  height: 400px;
 }
 
 /* Footer */
