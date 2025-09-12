@@ -187,25 +187,35 @@
         </section>
 
         <!-- Q&A Cards -->
+        <section class="qa-section">
+          <div v-if="currentIndex === null" class="qa-grid">
+            <n-card v-for="(qa, index) in qas" :key="index" class="qa-card" @click="openQA(index)" hoverable>
+              <template #header>{{ qa.question }}</template>
+              <div v-html="qa.answer.slice(0, 60) + '...'" />
+            </n-card>
+          </div>
 
-        <section class="qa-list">
-          <n-grid :cols="1" :x-gap="24" :y-gap="24" responsive>
-            <n-grid-item v-for="(q, idx) in qas" :key="idx">
-              <n-card class="glass qa-card" hoverable>
-                <n-collapse>
-                  <n-collapse-item :title="q.question">
-                    <div class="qa-answer">
-                      <!-- 文字答案 -->
-                      <p v-html="q.answer"></p>
-                      <!-- 如果有圖表，顯示圖表 -->
-                      <v-chart v-if="q.chartOption" class="chart" :option="q.chartOption" autoresize />
-                    </div>
-                  </n-collapse-item>
-                </n-collapse>
-              </n-card>
-            </n-grid-item>
-          </n-grid>
+          <div v-else class="qa-focus">
+            <div class="qa-top-bar">
+              <n-button text @click="closeQA">返回列表</n-button>
+            </div>
+
+            <Swiper :pagination="true" :navigation="true" :modules="modules" :autoHeight="true" class="qa-swiper">
+              <SwiperSlide v-for="(qa, index) in qas" :key="index">
+                <div class="qa-focus-main">
+                  <div class="qa-focus-left">
+                    <h3>{{ qa.question }}</h3>
+                    <div v-html="qa.answer" class="qa-answer" />
+                  </div>
+                  <div class="qa-focus-right">
+                    <component :is="getIllustration(qa)" :qa="qa" />
+                  </div>
+                </div>
+              </SwiperSlide>
+            </Swiper>
+          </div>
         </section>
+
 
 
 
@@ -227,12 +237,25 @@
 <script setup>
 import { ref } from 'vue'
 import { darkTheme } from 'naive-ui'
-import { NCard, NGrid, NGridItem, NCollapse, NCollapseItem } from "naive-ui"
+import { NCard, NButton, NTag } from "naive-ui"
 import VChart from "vue-echarts"
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { PieChart } from "echarts/charts"
 import { TitleComponent, TooltipComponent, LegendComponent } from "echarts/components"
+import { Swiper, SwiperSlide } from 'swiper/vue'
+
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/navigation'
+
+// 導入模組
+// Import required modules
+import { Pagination, Navigation } from 'swiper/modules'
+
+// 在 <script setup> 中直接定義
+const modules = [Pagination, Navigation]
 
 // 註冊 ECharts 組件
 use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent, LegendComponent])
@@ -246,31 +269,50 @@ const scrollTo = (id) => {
   }
 }
 
-const option = {
-  title: {
-    text: "學習時間分配",
-    left: "center"
-  },
-  tooltip: {
-    trigger: "item"
-  },
-  legend: {
-    bottom: 0
-  },
-  series: [
-    {
-      name: "每日學習時數",
-      type: "pie",
-      radius: "50%",
-      data: [
-        { value: 8, name: "平日 (第一二階段)" },
-        { value: 4, name: "假日 (複習/練習)" },
-        { value: 9, name: "平日 (第三階段)" },
-        { value: 5, name: "假日 (專案/討論)" }
-      ]
-    }
-  ]
+const currentIndex = ref(null);
+
+function openQA(index) {
+  currentIndex.value = index
+  nextTick(() => {
+    swiperRef.value?.slideTo(index, 0)
+  })
 }
+
+function closeQA() {
+  currentIndex.value = null
+}
+
+
+function getIllustration(qa) {
+  switch (qa.illustration?.type) {
+    case "chart": return ChartIllustration
+    case "image": return ImageIllustration
+    case "tag": return TagIllustration
+    default: return EmptyIllustration
+  }
+}
+
+/* === Illustration Components === */
+const ChartIllustration = {
+  props: ["qa"],
+  components: { VChart },
+  template: `<v-chart :option="qa.illustration.chartOption" autoresize style="height:300px;width:100%" />`
+};
+
+const ImageIllustration = {
+  props: ["qa"],
+  template: `<img :src="qa.illustration.src" alt="illustration" class="qa-image" />`
+};
+
+const TagIllustration = {
+  props: ["qa"],
+  components: { NTag },
+  template: `<div class="tag-box"><n-tag v-for="tag in qa.illustration.content" :key="tag" type="info">{{ tag }}</n-tag></div>`
+};
+
+const EmptyIllustration = {
+  template: `<div class="empty-illustration">（無額外內容）</div>`
+};
 
 // Q&A data
 const qas = [
@@ -320,7 +362,7 @@ const qas = [
   },
   {
     question: '其他想要對我們說的事情？',
-    answer: `我非常珍惜能這次申請的機會。無論是過去自學的經驗，還是轉職的培訓過程，都讓我更確信自己適合透過密集訓練進步。我相信自己具備持續投入與快速吸收的能力，非常希望能參加這次的課程中，培養更多能力並完成更有挑戰性的專案。`
+    answer: `我非常珍惜能這次申請的機會。無論是過去自學的經驗，還是轉職的培訓過程，都讓我更確信自己適合透過密集訓練進步。我相信自己具專注投入與快速吸收的能力，非常希望能參加這次的課程中，培養更多能力並完成更有挑戰性的專案。`
   },
 ]
 </script>
@@ -597,20 +639,73 @@ html,
 }
 
 /* QA */
-.qa-list {
-  margin-top: 60px;
+.qa-section {
+  margin-top: 2rem;
+}
+
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.qa-card {
+  cursor: pointer;
 }
 
 .qa-answer {
-  line-height: 1.9;
-  font-size: 16px;
-  color: var(--subtext-light);
-  transition: color 0.3s;
+  margin-top: 1rem;
+  line-height: 1.6;
 }
 
-.chart {
+.qa-nav {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.qa-image {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.tag-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+
+.qa-focus {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.qa-focus-main {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  max-height: 70vh;
+  padding: 0 50px;
+}
+
+.qa-focus-left {
+  flex: 2;
+}
+
+.qa-focus-right {
+  flex: 1;
+  border-left: 1px solid #ddd;
+  padding-left: 1rem;
+}
+
+
+.qa-swiper {
   width: 100%;
-  height: 400px;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 /* Footer */
