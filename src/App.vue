@@ -119,8 +119,6 @@
   onUnmounted()
 -->
 <template>
-
-
   <Suspense>
     <template #default>
       <AsyncWelcomeWehelp />
@@ -132,7 +130,6 @@
       </div>
     </template>
   </Suspense>
-
 </template>
 
 <script setup>
@@ -160,6 +157,21 @@ const AsyncWelcomeWehelp = defineAsyncComponent(() =>
 }
 
 
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+}
+
+body,
+html,
+#app {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  transition: background 0.5s, color 0.5s;
+}
 
 .loading-overlay {
   position: fixed;
@@ -168,21 +180,17 @@ const AsyncWelcomeWehelp = defineAsyncComponent(() =>
   width: 100%;
   height: 100%;
   background: rgba(255, 255, 255, 0.8);
-  /* 淺色模式半透明背景 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  /* 確保蓋在最上面 */
   backdrop-filter: blur(4px);
-  /* 微模糊背景 */
   transition: opacity 0.3s ease;
 }
 
 .mode-dark .loading-overlay {
   background: rgba(0, 0, 0, 0.6);
-  /* 深色模式背景 */
 }
 
 .spinner {
@@ -190,7 +198,6 @@ const AsyncWelcomeWehelp = defineAsyncComponent(() =>
   height: 60px;
   border: 6px solid rgba(0, 0, 0, 0.1);
   border-top: 6px solid #3eaf7c;
-  /* 亮色綠藍感 (可改成主題色) */
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -199,7 +206,6 @@ const AsyncWelcomeWehelp = defineAsyncComponent(() =>
 .mode-dark .spinner {
   border: 6px solid rgba(255, 255, 255, 0.1);
   border-top: 6px solid #4ecdc4;
-  /* 深色模式用清爽藍綠 */
 }
 
 @keyframes spin {
@@ -220,19 +226,19 @@ const AsyncWelcomeWehelp = defineAsyncComponent(() =>
   color: #eee;
 }
 
-/* Reset & Base */
-* {
-  box-sizing: border-box;
+.n-dialog__close,
+.n-dialog__close .n-icon {
+  box-sizing: content-box !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
-body,
-html,
-#app {
-  height: 100%;
-  margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  background-color: var(--bg-light);
-  color: var(--text-light);
-  transition: background 0.5s, color 0.5s;
+.n-dialog__close {
+  color: red !important;
+  /* 測試用，確定它存在 */
+  font-size: 24px !important;
 }
 </style>
